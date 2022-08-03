@@ -24,10 +24,3 @@ sqlparse==0.3.0           # via django, django-debug-toolbar
 urllib3==1.25.6           # via requests
 wcwidth==0.1.8            # via pytest
 zipp==2.2.0               # via importlib-metadata
-
-
-pep8-naming
-flake8
-flake8-broken-line
-flake8-return
-flake8-isort
