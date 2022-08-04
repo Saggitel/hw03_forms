@@ -70,6 +70,21 @@ def post_detail(request, post_id):
     return render(request, template_name, context)
 
 
+def post_detail(request, post_id):
+    template_name = 'posts/post_detail.html'
+    post = get_object_or_404(Post, id=post_id)
+    post_list = Post.objects.all()
+    post_counter = post_list.filter(author=post.author).count()
+    title = post.text[:30]
+    context = {
+        'title': title,
+        'post': post,
+        'post_list': post_list,
+        'post_counter': post_counter,
+    }
+    return render(request, template_name, context)
+
+
 @login_required
 def post_create(request):
     template_name = 'posts/create_post.html'

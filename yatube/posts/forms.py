@@ -4,10 +4,8 @@ from .models import Post
 
 
 class PostForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['group'].empty_label = 'Группа не выбрана'
-
     class Meta:
         model = Post
         fields = ('text', 'group',)
+        help_texts = {'text': 'Введите сообщение', 'group': 'Выберите группу'}
+        labels = {'text': 'Текст сообщения', 'group': 'Группа'}
