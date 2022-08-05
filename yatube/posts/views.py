@@ -8,49 +8,50 @@ from .models import Post, Group, User
 
 NUMBER_OF_POSTS = 10
 
-
-def index(request):
-    template_name = 'posts/index.html'
-    post_list = Post.objects.all().order_by('-pub_date')
-    paginator = Paginator(post_list, NUMBER_OF_POSTS)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    context = {
-        'page_obj': page_obj,
-    }
-    return render(request, template_name, context)
-
-
-def group_posts(request, slug):
-    template_name = 'posts/group_list.html'
-    group = get_object_or_404(Group, slug=slug)
-    posts = Post.objects.all().filter(group=group)
+def paginator(request, posts):
     paginator = Paginator(posts, NUMBER_OF_POSTS)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    title = 'Записи сообщества'
+    return page_obj
+
+
+def index(request):
+    posts = Post.objects.select_related('group')
+    context = {
+        'page_obj': paginator(request, posts),
+    }
+    return render(request, 'posts/index.html', context)
+
+
+def group_posts(request, slug):
+    group = get_object_or_404(Group, slug=slug)
+    posts = group.posts.all()
+
     context = {
         'group': group,
-        'title': title + ' ' + str(group),
-        'page_obj': page_obj,
     }
-    return render(request, template_name, context)
+    context.update(paginator(posts, request))
+
+    return render(request, 'posts/group_list.html', context)
 
 
 def profile(request, username):
-    template_name = 'posts/profile.html'
-    user_profile = get_object_or_404(User, username=username)
-    user_posts = user_profile.posts.all()
-    paginator = Paginator(user_posts, NUMBER_OF_POSTS)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    post_counter = user_posts.count()
-    title = f'Профайл пользователя {user_profile.get_full_name()}'
+    author = get_object_or_404(User, username=username)
+    posts = author.posts.all()
+    context = {
+        'author': author,
+    }
+    context.update(paginator(posts, request))
+    return render(request, 'posts/profile.html', context)
+
+
+def post_detail(request, post_id):
+    template_name = 'posts/post_detail.html'
+    post = get_object_or_404(Post, id=post_id)
+    title = post.text[:30]
     context = {
         'title': title,
-        'author': user_profile,
-        'page_obj': page_obj,
-        'post_counter': post_counter,
+        'post': post,
     }
     return render(request, template_name, context)
 
@@ -58,29 +59,10 @@ def profile(request, username):
 def post_detail(request, post_id):
     template_name = 'posts/post_detail.html'
     post = get_object_or_404(Post, id=post_id)
-    post_list = Post.objects.all()
-    post_counter = post_list.filter(author=post.author).count()
     title = post.text[:30]
     context = {
         'title': title,
         'post': post,
-        'post_list': post_list,
-        'post_counter': post_counter,
-    }
-    return render(request, template_name, context)
-
-
-def post_detail(request, post_id):
-    template_name = 'posts/post_detail.html'
-    post = get_object_or_404(Post, id=post_id)
-    post_list = Post.objects.all()
-    post_counter = post_list.filter(author=post.author).count()
-    title = post.text[:30]
-    context = {
-        'title': title,
-        'post': post,
-        'post_list': post_list,
-        'post_counter': post_counter,
     }
     return render(request, template_name, context)
 
