@@ -8,6 +8,7 @@ from .models import Post, Group, User
 
 NUMBER_OF_POSTS = 10
 
+
 def paginator(request, posts):
     paginator = Paginator(posts, NUMBER_OF_POSTS)
     page_number = request.GET.get('page')
