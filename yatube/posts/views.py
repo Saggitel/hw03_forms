@@ -48,7 +48,6 @@ def post_detail(request, post_id):
     template_name = 'posts/post_detail.html'
     post = get_object_or_404(Post, id=post_id)
     context = {
-        'title': title,
         'post': post,
     }
     return render(request, template_name, context)
