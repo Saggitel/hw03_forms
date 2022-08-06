@@ -30,9 +30,8 @@ def group_posts(request, slug):
 
     context = {
         'group': group,
+        'page_obj': paginator(request, posts),
     }
-    context.update(paginator(posts, request))
-
     return render(request, 'posts/group_list.html', context)
 
 
@@ -41,20 +40,9 @@ def profile(request, username):
     posts = author.posts.all()
     context = {
         'author': author,
+        'page_obj': paginator(request, posts),
     }
-    context.update(paginator(posts, request))
     return render(request, 'posts/profile.html', context)
-
-
-def post_detail(request, post_id):
-    template_name = 'posts/post_detail.html'
-    post = get_object_or_404(Post, id=post_id)
-    title = post.text[:30]
-    context = {
-        'title': title,
-        'post': post,
-    }
-    return render(request, template_name, context)
 
 
 def post_detail(request, post_id):
