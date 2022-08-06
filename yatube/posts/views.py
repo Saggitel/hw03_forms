@@ -12,8 +12,7 @@ NUMBER_OF_POSTS = 10
 def paginator(request, posts):
     paginator = Paginator(posts, NUMBER_OF_POSTS)
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return page_obj
+    return paginator.get_page(page_number)
 
 
 def index(request):
@@ -48,7 +47,6 @@ def profile(request, username):
 def post_detail(request, post_id):
     template_name = 'posts/post_detail.html'
     post = get_object_or_404(Post, id=post_id)
-    title = post.text[:30]
     context = {
         'title': title,
         'post': post,
@@ -72,16 +70,16 @@ def post_create(request):
 
 @login_required
 def post_edit(request, post_id):
-    template_name = "posts/create_post.html"
+    template_name = 'posts/create_post.html'
     post = get_object_or_404(Post, pk=post_id)
     if request.user.id != post.author.id:
         return redirect('posts:post_detail', post.pk)
     form = PostForm(request.POST or None, instance=post)
     if form.is_valid():
         form.save()
-        return redirect("posts:post_detail", post.id)
+        return redirect('posts:post_detail', post.id)
     context = {
-        "form": form,
-        "is_edit": True,
+        'form': form,
+        'is_edit': True,
     }
     return render(request, template_name, context)
